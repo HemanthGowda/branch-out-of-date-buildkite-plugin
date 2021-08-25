@@ -1,6 +1,12 @@
 name: Branch up-to-date
-description: Checks if the feature branch is up to date with main branch
+description: Checks if the current git branch is up to date with any other branch
 author: https://github.com/HemanthGowda
-requirements: []
+requirements:
+  - git
 configuration:
+  properties:
+    remote:
+      type: string
+    branch:
+      type: string
   additionalProperties: false

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -ueo pipefail
+
+remote="${BUILDKITE_PLUGIN_BRANCH_UP_TO_DATE_REMOTE:-origin}"
+branch="${BUILDKITE_PLUGIN_BRANCH_UP_TO_DATE_BRANCH:-main}"
+
+echo "Checking if this branch is up-to-date with ${remote}/${branch}"
+
+git fetch "${remote}" "${branch}"
+
+source_refname=$(git rev-parse --verify HEAD)
+target_refname="${remote}/${branch}"
+common_git_hash=$(git merge-base "${source_refname}" "${target_refname}")
+target_head_git_hash=$(git log -n 1 --pretty=format:"%H" "${target_refname}")
+
+if [ "$common_git_hash" == "$target_head_git_hash" ]; then
+  echo "HEAD from ${remote}/${branch} branch has been merged to this branch" >&2
+  exit 0
+else
+  echo "Current HEAD from ${remote}/${branch} branch has not been merged to this branch" >&2
+  exit 1
+fi
